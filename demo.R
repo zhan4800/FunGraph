@@ -76,7 +76,7 @@ for(t in 1:T){
   
 MCMCspecs = list(B=1000,thin=5,burnin=1000,update=1000);
 D_prior = list(a=0.1,b=0.1); lam_prior = list(a=0.1,b=1);
-fgbay.samp <- fgraph_ccc(y,Phi,MCMCspecs,D_prior,lam_prior,ncor=1)
+fgbay.samp <- fgraph_ccc(y,Phi,MCMCspecs,D_prior,lam_prior)
 
 fgbay.est <- array(diag(p),c(p,p,T))
 for(t in 1:T) fgbay.est[,,t][upper.tri(diag(p))] <- apply(fgbay.samp$ccc[,t,],1,function(x) (quantile(x,0.025)>0 | quantile(x,0.975)<0)*1)
