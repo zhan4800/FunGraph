@@ -1,6 +1,7 @@
 fgraph_ccc = function(Y,Phi,MCMCspecs,D_prior,lam_prior,ncor=NULL) {
 
 # Note: functions to conduct functional network inference using lasso on conditional cross-covariance
+# This is the parallel compuating version
 # Input: Y - (nXpxT) data matrix, p: # of variables; T: # of functionallocation; n: sample size
 #        Phi - (KxT) basis function matrix
 #        MCMCspecs - parameters for MCMC iterations
