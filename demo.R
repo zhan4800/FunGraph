@@ -23,7 +23,8 @@ T = 128
 tt = 1:T
 r.max <- -0.99
 r1 <- sapply(tt,function(t) min(max(0,t-T/4),T/2)*(r.max/(T/2))) 
-
+r2 <- r.max - r1
+             
 Sigma.err <- rep(list(diag(p)),T)
 for(t in 1:T) {
     Omega.tmp <- diag(c(rep(2,6),rep(3,4)))
