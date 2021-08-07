@@ -1,5 +1,5 @@
-fgraph_ccc = function(Y,Phi,MCMCspecs,D_prior,lam_prior,ncor=NULL) {
-
+fgraph_ccc = function(Y,Phi,MCMCspecs,D_prior,lam_prior) {
+# This is the non-parallel computing version
 # Note: functions to conduct functional network inference using lasso on conditional cross-covariance
 # Input: Y - (nXpxT) data matrix, p: # of variables; T: # of functional location; n: sample size
 #        Phi - (KxT) basis function matrix
@@ -13,9 +13,9 @@ library(abind)
 library(plyr)
 library(MASS)
 library(glasso)
-library(doParallel)
-library(foreach)
-if(!is.null(ncor)) registerDoParallel(ncor)
+# library(doParallel)
+# library(foreach)
+# if(!is.null(ncor)) registerDoParallel(ncor)
 
 ### Step 1: Apply DWT to project observed functions into basis dual space
 n = dim(Y)[1]; p = dim(Y)[2]; T = dim(Y)[3];
@@ -55,16 +55,19 @@ lam.samp = matrix(NA,K,B);
 is=0;
 for(t in 1:(B*thin+burnin)) {
     
+    for(k in 1:K){
+        
     # (1) Update C
-    C.dual = foreach(k=1:K,.export=c('C.update','Cij.post')) %dopar% C.update(n,S.dual[[k]],C.dual[[k]],Dd.dual[[k]],lam.dual[k])
+    C.dual[[k]] = C.update(n,S.dual[[k]],C.dual[[k]],Dd.dual[[k]],lam.dual[k])
     
     # (2) Update D.diag
     for(stp in 1:5)
-    Dd.dual = foreach(k=1:K,.export=c('D.update','D.post')) %dopar% D.update(n,S.dual[[k]],C.dual[[k]],Dd.dual[[k]],D_prior)
+    Dd.dual[[k]] = D.update(n,S.dual[[k]],C.dual[[k]],Dd.dual[[k]],D_prior)
     
     # (3) Update lambda
-    lam.dual = foreach(k=1:K,.export=c('lam.update','C2rho'),.combine='c') %dopar% lam.update(C.dual[[k]],lam_prior)
+    lam.dual[k] = lam.update(C.dual[[k]],lam_prior)
     
+    }
 
     # (4) Save MCMC sample
     if(t>burnin && (t-burnin)%%thin==0) { 
