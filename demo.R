@@ -44,9 +44,9 @@ n <- 50; p=10; T=128
 y <- array(NA,c(n,p,T))
 
 for(t in 1:T){
-  err <- matrix(rnorm(n*p),n) %*% chol(Sigma.err[[t]]) + matrix(rnorm(n*p),n)*sig.e
-  if(t == 1) y[,,t] <- err else
-    y[,,t] <- y[,,t-1]*sqrt(0.5) + err*sqrt(0.5)
+  err <- matrix(rnorm(n*p),n) %*% chol(Sigma.err[[t]])
+  if(t == 1) y[,,t] <- err + matrix(rnorm(n*p),n)*sig.e else
+    y[,,t] <- y[,,t-1]*sqrt(0.5) + err*sqrt(0.5) + matrix(rnorm(n*p),n)*sig.e
 }
 
 
@@ -109,9 +109,9 @@ Sigma.A2 <- diag(diag(SS.A2)^-0.5) %*% SS.A2 %*% diag(diag(SS.A2)^-0.5)*2
 x1 <- matrix(rnorm(n*p),n) %*% chol(Sigma.A1*0.3)
 x2 <- matrix(rnorm(n*p),n) %*% chol(Sigma.A2*0.3)
 
-err <- matrix(rnorm(n*p),n) %*% chol(Sigma.err[[t]]) + matrix(rnorm(n*p),n)*sig.e
+err <- matrix(rnorm(n*p),n) %*% chol(Sigma.err[[t]])
 for(t in 1:T){
-  if(t <= T/2) y[,,t] <- x1 + err*sqrt(0.7) else y[,,t] <- x2 + err*sqrt(0.7)
+  if(t <= T/2) y[,,t] <- x1 + err*sqrt(0.7) + matrix(rnorm(n*p),n)*sig.e else y[,,t] <- x2 + err*sqrt(0.7) + matrix(rnorm(n*p),n)*sig.e
 }
 
 
